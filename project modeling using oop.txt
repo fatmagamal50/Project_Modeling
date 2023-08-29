@@ -1,0 +1,193 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define  ll long long
+
+class RNG {
+public:
+    virtual void GENER() = 0;
+};
+
+class LFG : public RNG {
+public:
+
+    void GENER() override {
+        int j, k, x0, x1, n, m;
+        char operation;
+        cout << "Enter j, k, x0, x1, n, m: ";
+        cin >> j >> k >> x0 >> x1 >> n >> m;
+        if (j <= 0 || k <= j) {
+            cout << "Invalid j and k must follow this formula( 0 < j < k )\n";
+            return ;
+        }
+        cout << "Enter operation (+, -, ^, *): ";
+        cin >> operation;
+        vector<long long> arr(n);
+        arr[0] = x0;
+        arr[1] = x1;
+        for (int i = 2; i < n; i++) {
+            long long ans;
+            switch (operation) {
+                case '+':
+                    ans = (arr[i - j] + arr[i - k]) % m;
+                    break;
+                case '-':
+                    ans = (arr[i - j] - arr[i - k]) % m;
+                    break;
+                case '^':
+                    ans = (arr[i - j] ^ arr[i - k]) % m;
+                    break;
+                case '*':
+                    ans = (arr[i - j] * arr[i - k]) % m;
+                    break;
+                default:
+                    ans = (arr[i - j] + arr[i - k]) % m;
+                    break;
+            }
+            if (ans < 0) {
+                ans += m;
+            }
+            arr[i] = ans;
+        }
+        for (int i = 0; i < n; i++) {
+            cout << arr[i] << " ";
+        }
+             cout << "\n";
+
+        for (int i = 0; i < n; i++) {
+            float res = float(arr[i]) / float(m);
+            cout << "R(" << i << ") " << res << "\n";
+        }
+    }
+
+
+};
+
+class MRG : public RNG {
+public:
+    void GENER() override {
+        int num, count ;
+    cout << "please enter the amount of random numbers you want to GENER:  ";
+    cin >>num ;
+    cout<<"please enter the number of the muitipliers :  "<<"\n";
+    cin >> count;
+
+
+    vector<float> multipliers;
+    cout<<"please enter the muitipliers :  "<<"\n";
+    for (int i = 0; i < count; ++i) {
+        float n ;
+        cin>> n ;
+        multipliers.push_back(n);
+    }
+
+
+    int modulus,numprevvalues ;
+    vector<int> prevvalues;
+    cout<< " please enter the m and the number of the pre-values:"<<"\n";
+    cin>> modulus>>numprevvalues;
+    for (int i = 0; i < numprevvalues ; ++i) {
+        int n ;
+        cin>> n ;
+        prevvalues.push_back(n);
+    }
+
+    int t=num -numprevvalues;
+    for (int i = 0; i < numprevvalues ; ++i) {
+
+        prevvalues[i];
+    }
+
+    while (t--) {
+        float x = 0;
+        int counter= multipliers.size()-1;
+        for (int i = 0; i < multipliers.size(); ++i) {
+
+            x += (multipliers[i] * prevvalues[counter]);
+            counter--;
+        }
+        while (x >= modulus) {
+            x -= modulus;
+        }
+
+        prevvalues.push_back(x);
+        prevvalues.erase(prevvalues.begin());
+        float Rn = x / modulus;
+        cout << "x= "<<x<<"\n";
+        cout<< "Rn= "<<Rn<<"\n";
+    }
+}
+
+
+};
+
+class ICG : public RNG {
+public:
+    void GENER() override {
+        cout << "Please enter the required parameters: x0, a, and m" << "\n";
+        float x, a, m, ans;
+        cin >> x >> a >> m;
+        int num;
+        cout << "Please enter the amount of random numbers you want to GENER: ";
+        cin >> num;
+        for (int i = 0; i < num; ++i) {
+            ans = (a / x);
+            while (ans >= m) {
+                ans -= m;
+            }
+            cout << "x(" << i + 1 << ") = " << ans << "\n"<< "R(" << i + 1 << ") = " << ans / m << "\n\n";
+            x = ans;
+        }
+    }
+};
+
+class MSM : public RNG {
+public:
+    void GENER() override {
+        ll int seed, sqr, num, div, rnd;
+        int n;
+
+        cout << "Enter seed value for random number generator: ";
+        cin >> seed;
+
+        cout << "How many random numbers do you want to GENER?: ";
+        cin >> n;
+
+        for (int i = 0; i < n; i++) {
+            sqr = seed * seed;
+            num = sqr / 100;
+            div = pow(10, 4);
+            rnd = num % div;
+            seed = rnd;
+
+            cout << "X" <<"("<< i+1 <<")"<< ": " << rnd << "\n" <<"R"<<"("<<i+1<<")"<< ": " << seed / 10000.0 << "\n\n";
+        }
+        cout << "\n";
+    }
+};
+
+int main() {
+    string type;
+    cout << "Enter type: ";
+    cin >> type;
+    RNG* g = nullptr;
+    if (type == "ICG") {
+        g = new ICG();
+    }
+    else if (type == "LFG") {
+
+        g = new LFG();
+    }
+    else if (type == "MRG") {
+        g = new MRG();
+    }
+    else if (type == "MSM") {
+        g = new MSM();
+    }
+
+    if (g) {
+        g->GENER();
+        delete g;
+    }
+
+    return 0;
+}
